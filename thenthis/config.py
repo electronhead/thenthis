@@ -2,16 +2,16 @@ from whendo.sdk.client import Client
 from whendo.core.server import Server
 import whendo.core.util as util
 import whendo.core.actions.dispatch_action as disp_x
-import thenthis.pi as pi_objs
+import thenthis.inventory as inventory
 
 
-actions = pi_objs.actions
-schedulers = pi_objs.schedulers
-programs = pi_objs.programs
-servers = pi_objs.servers
-hub = pi_objs.hub
-pi3 = pi_objs.pi3
-pi4 = pi_objs.pi4
+actions = inventory.actions
+schedulers = inventory.schedulers
+programs = inventory.programs
+servers = inventory.servers
+hub = inventory.hub
+pi3 = inventory.pi3
+pi4 = inventory.pi4
 pivot_servers = [pi3, pi4]
 
 
