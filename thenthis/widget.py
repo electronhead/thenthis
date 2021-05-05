@@ -17,26 +17,31 @@ class DictionaryWidget:
         if not self.widget:
             titles = []
             ui_elements = []
-            for (key, value) in self.dictionary.items():
-                key_element = None
-                if isinstance(value, BaseModel):
-                    key_element = BaseModelWidget(model=value).ui()
-                elif isinstance(value, list):
-                    key_element = ListWidget(values=value).ui()
-                elif isinstance(value, dict):
-                    key_element = DictionaryWidget(dictionary=value).ui()
-                elif isinstance(value, BaseModel):
-                    key_element = BaseModelWidget(model=value).ui()
-                else:
-                    key_element = widgets.Label(
-                        value=f"unknown element type ({str(value)}"
-                    )
-                try:
-                    titles.append(key + " -- " + value.description())
-                except AttributeError:
-                    titles.append(key)
-                ui_elements.append(widgets.HBox(children=[key_element]))
-            self.widget = widgets.Accordion(children=ui_elements, titles=titles)
+            if self.dictionary:
+                for (key, value) in self.dictionary.items():
+                    key_element = None
+                    if isinstance(value, BaseModel):
+                        key_element = BaseModelWidget(model=value).ui()
+                    elif isinstance(value, list):
+                        key_element = ListWidget(values=value).ui()
+                    elif isinstance(value, dict):
+                        key_element = DictionaryWidget(dictionary=value).ui()
+                    elif isinstance(value, BaseModel):
+                        key_element = BaseModelWidget(model=value).ui()
+                    else:
+                        key_element = widgets.Label(
+                            value=f"unknown element type ({str(value)}"
+                        )
+                    try:
+                        titles.append(key + " -- " + value.description())
+                    except AttributeError:
+                        titles.append(key)
+                    ui_elements.append(widgets.HBox(children=[key_element]))
+                self.widget = widgets.Accordion(children=ui_elements, titles=titles)
+            else:
+                self.widget = widgets.Label(
+                    value=f"NULL element encountered when rendering a DictionaryWidget"
+                )
         return self.widget
 
 

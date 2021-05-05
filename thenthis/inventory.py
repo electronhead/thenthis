@@ -14,12 +14,12 @@ import whendo.core.programs.simple_program as prog_x
 
 
 actions = {}
-actions["pinA_on"] = gpio_x.SetPin(pin=25, on=True)
-actions["pinA_off"] = gpio_x.SetPin(pin=25, on=False)
-actions["pinA_state"] = gpio_x.PinState(pin=25)
-actions["pinB_on"] = gpio_x.SetPin(pin=27, on=True)
-actions["pinB_off"] = gpio_x.SetPin(pin=27, on=False)
-actions["pinB_state"] = gpio_x.PinState(pin=27)
+actions["pinA_on"] = gpio_x.SetPin(pin=18, on=True)
+actions["pinA_off"] = gpio_x.SetPin(pin=18, on=False)
+actions["pinA_state"] = gpio_x.PinState(pin=18)
+actions["pinB_on"] = gpio_x.SetPin(pin=17, on=True)
+actions["pinB_off"] = gpio_x.SetPin(pin=17, on=False)
+actions["pinB_state"] = gpio_x.PinState(pin=17)
 actions["gpio_clear"] = gpio_x.CleanupPins()
 actions["file_heartbeat"] = file_x.FileAppend(file="gpio_beat.txt")
 actions["file_append"] = file_x.FileAppend()
@@ -74,15 +74,12 @@ programs["pivot_program"] = (
 )
 
 servers = {}
-servers["pi3"] = Server(
-    host="192.168.0.46", port=8000, tags={"server_name": ["pi3"], "roles": ["pivot"]}
+servers["ups"] = Server(
+    host="192.168.1.94", port=8000, tags={"server_name": ["ups"], "roles": ["hub"]}
 )
-pi3 = servers["pi3"]
-servers["pi4"] = Server(
-    host="192.168.0.45", port=8000, tags={"server_name": ["pi4"], "roles": ["pivot"]}
+servers["remotepi"] = Server(
+    host="192.168.1.214", port=8000, tags={"server_name":["remotepi"],"roles":["pivot"]}
 )
-pi4 = servers["pi4"]
-servers["hub"] = Server(
-    host="192.168.0.26", port=8000, tags={"server_name": ["hub"], "roles": ["hub"]}
-)
-hub = servers["hub"]
+
+ups = servers["ups"]
+remotepi = servers["remotepi"]

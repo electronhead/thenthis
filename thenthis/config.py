@@ -9,10 +9,9 @@ actions = inventory.actions
 schedulers = inventory.schedulers
 programs = inventory.programs
 servers = inventory.servers
-hub = inventory.hub
-pi3 = inventory.pi3
-pi4 = inventory.pi4
-pivot_servers = [pi3, pi4]
+ups = inventory.ups
+remotepi = inventory.remotepi
+pivot_servers = [remotepi]
 
 
 def server_client(s: Server):
