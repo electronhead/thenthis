@@ -44,17 +44,23 @@ def initialize_servers():
 
 
 def schedule_programs(start_stop: util.DateTime2):
-    client = server_client(hub)
+    client = server_client(ups)
     client.execute_action_with_rez(
         action_name="schedule_pivots", rez=util.Rez(flds={"start_stop": start_stop})
     )
 
+def schedule_toggles(start_stop: util.DateTime2):
+    client = server_client(ups)
+    client.execute_action_with_rez(
+        action_name="toggle_pivots", rez=util.Rez(flds={"start_stop": start_stop})
+    )
+
 def schedule_notifications():
-    client = server_client(hub)
+    client = server_client(ups)
     client.execute_action(action_name="schedule_pivot_notifications")
 
 def unschedule_pivots():
-    client = server_client(hub)
+    client = server_client(ups)
     action = disp_x.ClearAllScheduling()
     client.execute_supplied_action(disp_x.ExecSuppliedKeyTags(key_tags={"roles":["pivot"]}, action=action))
     client.execute_supplied_action(disp_x.ExecKeyTags(key_tags={"roles":["pivot"]}, action_name="gpio_clear"))
