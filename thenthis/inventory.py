@@ -25,45 +25,44 @@ actions["pinB_off"] = gpio_x.SetPin(pin=pinB, on=False)
 actions["pinB_state"] = gpio_x.PinState(pin=pinB)
 actions["pinB_toggle"] = gpio_x.TogglePin(pin=pinB)
 actions["gpio_clear"] = gpio_x.CleanupPins()
-actions["file_heartbeat"] = file_x.FileAppend(file="gpio_beat.txt")
 actions["file_append"] = file_x.FileAppend()
 actions["system_info"] = sys_x.SysInfo()
 actions["mini_info"] = sys_x.MiniInfo()
 actions["pause1"] = sys_x.Pause()
 actions["pause2"] = sys_x.Pause(seconds=2)
-actions["start_pivot"] = list_x.ListAction(
-    op_mode=list_x.ListOpMode.ALL,
-    actions=[
-        actions["pinA_on"],
-        actions["pinB_on"],
-        actions["pause1"],
-        actions["pinB_off"],
-    ],
-)
-actions["pause_gpio_clear"] = list_x.ListAction(
-    op_mode=list_x.ListOpMode.ALL, actions=[actions["pause2"], actions["gpio_clear"]]
-)
-actions["schedule_pivot_program"] = disp_x.ScheduleProgram(program_name="pivot_program")
-actions["schedule_pivots"] = disp_x.ExecKeyTags(
-    action_name="schedule_pivot_program", key_tags={"roles": ["pivot"]}
-)
 
-actions["toggle_toggle"] = list_x.All(actions=[actions["pinA_toggle"], actions["pinB_toggle"]])
-actions["schedule_toggle_program"] = disp_x.ScheduleProgram(program_name="toggle_program")
-actions["toggle_pivots"] = disp_x.ExecKeyTags(
-    action_name="schedule_toggle_program", key_tags={"roles": ["pivot"]}
-)
-
-actions["notify_at_hub"] = list_x.All(
-    actions=[
-        list_x.Vals(vals={"file": "pin_state.txt"}),
-        actions["pinA_state"],
-        disp_x.ExecKeyTags(key_tags={"roles": ["hub"]}, action_name="file_append"),
-    ]
-)
+actions["start_pivot"] = list_x.All(actions=[
+    actions["pinA_on"],
+    actions["pinB_on"],
+    actions["pause1"],
+    actions["pinB_off"],
+])
+actions["toggle_toggle"] = list_x.All(actions=[
+    actions["pinA_toggle"],
+    actions["pinB_toggle"]
+])
+actions["pause_gpio_clear"] = list_x.All(actions=[
+    actions["pause2"],
+    actions["gpio_clear"]
+])
+actions["notify_at_hub"] = list_x.All(actions=[
+    list_x.Vals(vals={"file": "pin_state.txt"}),
+    actions["pinA_state"],
+    disp_x.ExecKeyTags(key_tags={"roles": ["hub"]}, action_name="file_append"),
+])
 
 actions["schedule_notifications"] = disp_x.ScheduleAction(
     scheduler_name="timely", action_name="notify_at_hub"
+)
+
+actions["schedule_pivot_program"] = disp_x.ScheduleProgram(program_name="pivot_program")
+actions["schedule_toggle_program"] = disp_x.ScheduleProgram(program_name="toggle_program")
+
+actions["schedule_pivots"] = disp_x.ExecKeyTags(
+    action_name="schedule_pivot_program", key_tags={"roles": ["pivot"]}
+)
+actions["toggle_pivots"] = disp_x.ExecKeyTags(
+    action_name="schedule_toggle_program", key_tags={"roles": ["pivot"]}
 )
 actions["schedule_pivot_notifications"] = disp_x.ExecKeyTags(
     key_tags={"roles": ["pivot"]}, action_name="schedule_notifications"
@@ -93,13 +92,15 @@ programs["toggle_program"] = (
     .epilogue("pause_gpio_clear")
 )
 
+
 servers = {}
-servers["ups"] = Server(
-    host="192.168.1.94", port=8000, tags={"server_name": ["ups"], "roles": ["hub"]}
+servers["batterypi"] = Server(
+    host="192.168.1.94", port=8000, tags={"server_name": ["batterypi"], "roles": ["hub"]}
 )
 servers["remotepi"] = Server(
     host="192.168.1.214", port=8000, tags={"server_name":["remotepi"],"roles":["pivot"]}
 )
+servers["sandpatch"] = Server(
+    host="192.168.1.141", port=8000, tags={"server_name":["sandpatch"],"roles":["pivot"]}
+)
 
-ups = servers["ups"]
-remotepi = servers["remotepi"]
