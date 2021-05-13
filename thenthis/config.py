@@ -93,9 +93,11 @@ class Config(BaseModel):
             util.PP.pprint(client.execute_action("system_info"))
 
     def show_pin_states(self):
-        for (name, server) in self.inventory.servers.items():
+        for (name, server) in self.role_servers("pivot").items():
             client = self.server_client(server)
             self.show_header(server)
             for action_name in ["pinA_state", "pinB_state"]:
-                rez = rslv_x.resolve_rez(client.execute_action(action_name))
-                print(f"\taction ({action_name}) value ({1 if rez.result else 0})")
+                print(client.execute_action(action_name))
+# there is a bug somewhere in the execution of the next line
+#                 rez = rslv_x.resolve_rez(client.execute_action(action_name)) 
+#                 print(f"\taction ({action_name}) value ({1 if rez.result else 0})")
