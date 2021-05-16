@@ -53,6 +53,11 @@ class Config(BaseModel):
             self.off(client)
             client.run_jobs()
 
+    def run_jobs(self):
+        for (name, server) in self.inventory.servers.items():
+            client = self.server_client(server)
+            client.run_jobs()
+
     def schedule_programs(self, start_stop: util.DateTime2):
         client = self.server_client(self.hub())
         return client.execute_action_with_rez(
