@@ -29,10 +29,12 @@ class Inventory(BaseModel):
         self.actions["pinA_on"] = gpio_x.SetPin(pin=self.pinA, on=True)
         self.actions["pinA_off"] = gpio_x.SetPin(pin=self.pinA, on=False)
         self.actions["pinA_state"] = gpio_x.PinState(pin=self.pinA)
+        self.actions["pinA_state_no_setup"] = gpio_x.PinState(pin=self.pinA, setup=False)
         self.actions["pinA_toggle"] = gpio_x.TogglePin(pin=self.pinA)
         self.actions["pinB_on"] = gpio_x.SetPin(pin=self.pinB, on=True)
         self.actions["pinB_off"] = gpio_x.SetPin(pin=self.pinB, on=False)
         self.actions["pinB_state"] = gpio_x.PinState(pin=self.pinB)
+        self.actions["pinB_state_no_setup"] = gpio_x.PinState(pin=self.pinB, setup=False)
         self.actions["pinB_toggle"] = gpio_x.TogglePin(pin=self.pinB)
         self.actions["gpio_clear"] = gpio_x.CleanupPins()
         self.actions["file_append"] = file_x.FileAppend()
@@ -58,7 +60,7 @@ class Inventory(BaseModel):
         self.actions["notify_at_hub"] = list_x.All(
             actions=[
                 list_x.Vals(vals={"file": "pin_state.txt"}),
-                self.actions["pinA_state"],
+                self.actions["pinA_state_no_setup"],
                 disp_x.ExecKeyTags(
                     key_tags={"roles": ["hub"]}, action_name="file_append"
                 ),
@@ -66,7 +68,11 @@ class Inventory(BaseModel):
         )
 
         self.actions["schedule_notifications"] = disp_x.ScheduleAction(
-            scheduler_name="timely", action_name="notify_at_hub"
+            scheduler_name="randomly", action_name="notify_at_hub"
+        )
+
+        self.actions["unschedule_notifications"] = disp_x.UnscheduleSchedulerAction(
+            scheduler_name="randomly", action_name="notify_at_hub"
         )
 
         self.actions["schedule_pivot_program"] = disp_x.ScheduleProgram(
@@ -85,6 +91,9 @@ class Inventory(BaseModel):
         self.actions["schedule_pivot_notifications"] = disp_x.ExecKeyTags(
             key_tags={"roles": ["pivot"]}, action_name="schedule_notifications"
         )
+        self.actions["unschedule_pivot_notifications"] = disp_x.ExecKeyTags(
+            key_tags={"roles": ["pivot"]}, action_name="unschedule_notifications"
+        )
         self.actions["clear_all_scheduling"] = disp_x.ExecSuppliedKeyTags(
             key_tags={"roles": ["pivot"]}, action=disp_x.ClearAllScheduling()
         )
@@ -101,6 +110,7 @@ class Inventory(BaseModel):
         self.schedulers["timely"] = sched_x.Timely(interval=10)
         self.schedulers["quickly"] = sched_x.Timely(interval=1)
         self.schedulers["immediately"] = Immediately()
+        self.schedulers["randomly"] = sched_x.Randomly(low=3, high=7)
         return self
 
     def put_scheduler(self, name: str, obj: Scheduler):

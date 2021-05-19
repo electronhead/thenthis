@@ -74,6 +74,10 @@ class Config(BaseModel):
         client = self.server_client(self.hub())
         return client.execute_action(action_name="schedule_pivot_notifications")
 
+    def unschedule_notifications(self):
+        client = self.server_client(self.hub())
+        return client.execute_action(action_name="unschedule_pivot_notifications")
+
     def unschedule_pivots(self):
         client = self.server_client(self.hub())
         results1 = [result for result in client.execute_action("clear_all_scheduling")]
