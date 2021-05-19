@@ -42,6 +42,7 @@ class Inventory(BaseModel):
         self.actions["mini_info"] = sys_x.MiniInfo()
         self.actions["pause1"] = sys_x.Pause()
         self.actions["pause2"] = sys_x.Pause(seconds=2)
+        self.actions["fmt"] = list_x.RezFmt()
 
         self.actions["start_pivot"] = list_x.All(
             actions=[
@@ -60,7 +61,10 @@ class Inventory(BaseModel):
         self.actions["notify_at_hub"] = list_x.All(
             actions=[
                 list_x.Vals(vals={"file": "pin_state.txt"}),
+                self.actions["mini_info"],
                 self.actions["pinA_state_no_setup"],
+                self.actions["pinB_state_no_setup"],
+                self.actions["fmt"],
                 disp_x.ExecKeyTags(
                     key_tags={"roles": ["hub"]}, action_name="file_append"
                 ),
