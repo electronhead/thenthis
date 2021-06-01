@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from whendo.sdk.client import Client
 from whendo.core.server import Server
 import whendo.core.util as util
-import whendo.core.resolver as rslv_x
 from thenthis.inventory import Inventory
 
 
@@ -24,6 +23,10 @@ class Config(BaseModel):
 
     def server_client(self, s: Server):
         return Client(host=s.host, port=s.port)
+    
+    def execute_action(self, server: Server, action_name:str):
+        client = self.server_client(server)
+        return client.execute_action(action_name)
 
     def off(self, client: Client):
         client.execute_action("gpio_clear")
@@ -36,22 +39,25 @@ class Config(BaseModel):
         client.clear_jobs()
         client.clear_dispatcher()
 
+    def initialize_server(self, server):
+        client = self.server_client(server)
+        self.reset(client)
+        [client.add_server(*server) for server in self.inventory.servers.items()]
+        [client.add_action(*action) for action in self.inventory.actions.items()]
+        [
+            client.add_scheduler(*scheduler)
+            for scheduler in self.inventory.schedulers.items()
+        ]
+        [
+            client.add_program(*program)
+            for program in self.inventory.programs.items()
+        ]
+        self.off(client)
+        client.run_jobs()
+
     def initialize_servers(self):
         for (name, server) in self.inventory.servers.items():
-            client = self.server_client(server)
-            self.reset(client)
-            [client.add_server(*server) for server in self.inventory.servers.items()]
-            [client.add_action(*action) for action in self.inventory.actions.items()]
-            [
-                client.add_scheduler(*scheduler)
-                for scheduler in self.inventory.schedulers.items()
-            ]
-            [
-                client.add_program(*program)
-                for program in self.inventory.programs.items()
-            ]
-            self.off(client)
-            client.run_jobs()
+            self.initialize_server(server)
 
     def run_jobs(self):
         for (name, server) in self.inventory.servers.items():
@@ -99,14 +105,58 @@ class Config(BaseModel):
         for (name, server) in self.inventory.servers.items():
             client = self.server_client(server)
             self.show_header(server)
-            util.PP.pprint(client.execute_action("system_info"))
+            util.PP.pprint(client.execute_action("system_info").dict())
+
+    def show_pin_state(self, server):
+        client = self.server_client(server)
+        self.show_header(server)
+        for action_name in ["pinA_state", "pinB_state"]:
+            util.PP.pprint(client.execute_action(action_name).dict())
 
     def show_pin_states(self):
         for (name, server) in self.role_servers("pivot").items():
-            client = self.server_client(server)
-            self.show_header(server)
-            for action_name in ["pinA_state", "pinB_state"]:
-                print(client.execute_action(action_name))
-# there is a bug somewhere in the execution of the next line
-#                 rez = rslv_x.resolve_rez(client.execute_action(action_name)) 
-#                 print(f"\taction ({action_name}) value ({1 if rez.result else 0})")
+            self.show_pin_state(server)
+
+class ServerConfig(BaseModel):
+    server: Server
+    
+    def client(self):
+        returnClient(host=self.server.host, port=self.server.port)
+    
+    def show_status(self):
+        client = Client(host=self.server.host, port=self.server.port)
+        # pin states
+        # scheduling information
+    
+    def start(self, start: datetime, stop: datetime):
+        start_stop = util.Datetime2(start, stop)
+        self.client().execute_action_with_rez(
+            action_name="schedule_pivot_program", rez=util.Rez(flds={"start_stop": start_stop})
+        )
+        self.client().execute_action("schedule_notifications")
+    
+    def stop(self):
+        # unschedule program
+        # unschedule program body scheduler
+    
+    def initialize(self):
+        client = self.client()
+        try:
+            client.stop_jobs()
+        except:
+            pass
+        client.clear_jobs()
+        client.clear_dispatcher()
+        
+        [client.add_server(*server) for server in self.inventory.servers.items()]
+        [client.add_action(*action) for action in self.inventory.actions.items()]
+        [
+            client.add_scheduler(*scheduler)
+            for scheduler in self.inventory.schedulers.items()
+        ]
+        [
+            client.add_program(*program)
+            for program in self.inventory.programs.items()
+        ]
+        client.execute_action("gpio_clear")
+        client.run_jobs()

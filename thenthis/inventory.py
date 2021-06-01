@@ -40,6 +40,7 @@ class Inventory(BaseModel):
         self.actions["file_append"] = file_x.FileAppend()
         self.actions["system_info"] = sys_x.SysInfo()
         self.actions["mini_info"] = sys_x.MiniInfo()
+        self.actions["scheduling_info"] = disp_x.SchedulingInfo()
         self.actions["pause1"] = sys_x.Pause()
         self.actions["pause2"] = sys_x.Pause(seconds=2)
         self.actions["fmt"] = list_x.RezFmt()
@@ -114,7 +115,7 @@ class Inventory(BaseModel):
         self.schedulers["timely"] = sched_x.Timely(interval=10)
         self.schedulers["quickly"] = sched_x.Timely(interval=1)
         self.schedulers["immediately"] = Immediately()
-        self.schedulers["randomly"] = sched_x.Randomly(low=3, high=7)
+        self.schedulers["randomly"] = sched_x.Randomly(low=15, high=20)
         return self
 
     def put_scheduler(self, name: str, obj: Scheduler):
@@ -130,7 +131,7 @@ class Inventory(BaseModel):
         )
         self.programs["toggle_program"] = (
             prog_x.PBEProgram()
-            .body_element("quickly", "toggle_toggle")
+            .body_element("timely", "toggle_toggle")
             .epilogue("pause_gpio_clear")
         )
         return self
