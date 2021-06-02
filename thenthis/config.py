@@ -23,8 +23,8 @@ class Config(BaseModel):
 
     def server_client(self, s: Server):
         return Client(host=s.host, port=s.port)
-    
-    def execute_action(self, server: Server, action_name:str):
+
+    def execute_action(self, server: Server, action_name: str):
         client = self.server_client(server)
         return client.execute_action(action_name)
 
@@ -41,22 +41,24 @@ class Config(BaseModel):
 
     def initialize_server(self, server):
         client = self.server_client(server)
-        self.reset(client)
+        try:
+            client.stop_jobs()
+        except:
+            pass
+        client.clear_jobs()
+        client.clear_dispatcher()
         [client.add_server(*server) for server in self.inventory.servers.items()]
         [client.add_action(*action) for action in self.inventory.actions.items()]
         [
             client.add_scheduler(*scheduler)
             for scheduler in self.inventory.schedulers.items()
         ]
-        [
-            client.add_program(*program)
-            for program in self.inventory.programs.items()
-        ]
-        self.off(client)
+        [client.add_program(*program) for program in self.inventory.programs.items()]
+        client.execute_action("gpio_clear")
         client.run_jobs()
 
     def initialize_servers(self):
-        for (name, server) in self.inventory.servers.items():
+        for server in self.inventory.servers.values():
             self.initialize_server(server)
 
     def run_jobs(self):
@@ -116,47 +118,3 @@ class Config(BaseModel):
     def show_pin_states(self):
         for (name, server) in self.role_servers("pivot").items():
             self.show_pin_state(server)
-
-class ServerConfig(BaseModel):
-    server: Server
-    
-    def client(self):
-        returnClient(host=self.server.host, port=self.server.port)
-    
-    def show_status(self):
-        client = Client(host=self.server.host, port=self.server.port)
-        # pin states
-        # scheduling information
-    
-    def start(self, start: datetime, stop: datetime):
-        start_stop = util.Datetime2(start, stop)
-        self.client().execute_action_with_rez(
-            action_name="schedule_pivot_program", rez=util.Rez(flds={"start_stop": start_stop})
-        )
-        self.client().execute_action("schedule_notifications")
-    
-    def stop(self):
-        # unschedule program
-        # unschedule program body scheduler
-    
-    def initialize(self):
-        client = self.client()
-        try:
-            client.stop_jobs()
-        except:
-            pass
-        client.clear_jobs()
-        client.clear_dispatcher()
-        
-        [client.add_server(*server) for server in self.inventory.servers.items()]
-        [client.add_action(*action) for action in self.inventory.actions.items()]
-        [
-            client.add_scheduler(*scheduler)
-            for scheduler in self.inventory.schedulers.items()
-        ]
-        [
-            client.add_program(*program)
-            for program in self.inventory.programs.items()
-        ]
-        client.execute_action("gpio_clear")
-        client.run_jobs()

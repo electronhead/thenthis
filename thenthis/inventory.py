@@ -29,12 +29,16 @@ class Inventory(BaseModel):
         self.actions["pinA_on"] = gpio_x.SetPin(pin=self.pinA, on=True)
         self.actions["pinA_off"] = gpio_x.SetPin(pin=self.pinA, on=False)
         self.actions["pinA_state"] = gpio_x.PinState(pin=self.pinA)
-        self.actions["pinA_state_no_setup"] = gpio_x.PinState(pin=self.pinA, setup=False)
+        self.actions["pinA_state_no_setup"] = gpio_x.PinState(
+            pin=self.pinA, setup=False
+        )
         self.actions["pinA_toggle"] = gpio_x.TogglePin(pin=self.pinA)
         self.actions["pinB_on"] = gpio_x.SetPin(pin=self.pinB, on=True)
         self.actions["pinB_off"] = gpio_x.SetPin(pin=self.pinB, on=False)
         self.actions["pinB_state"] = gpio_x.PinState(pin=self.pinB)
-        self.actions["pinB_state_no_setup"] = gpio_x.PinState(pin=self.pinB, setup=False)
+        self.actions["pinB_state_no_setup"] = gpio_x.PinState(
+            pin=self.pinB, setup=False
+        )
         self.actions["pinB_toggle"] = gpio_x.TogglePin(pin=self.pinB)
         self.actions["gpio_clear"] = gpio_x.CleanupPins()
         self.actions["file_append"] = file_x.FileAppend()

@@ -32,6 +32,14 @@ ranch_config = Config(
             tags={"server_name": ["sandpatch"], "roles": ["pivot"]},
         ),
     )
+    .put_server(
+        "sandpatch-pivot",
+        Server(
+            host="192.168.1.11",
+            port=8000,
+            tags={"server_name": ["sandpatch"], "roles": ["pivot"]},
+        ),
+    )
 )
 pdx_config = Config(
     inventory=Inventory(pinA=25, pinB=27)
