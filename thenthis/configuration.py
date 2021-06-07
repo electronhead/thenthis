@@ -26,10 +26,13 @@ class Configuration(BaseModel):
     actions: Dict[str, Action] = {}
     schedulers: Dict[str, Scheduler] = {}
     programs: Dict[str, Program] = {}
-
-    def operations(self):
+        
+    def initialize(self):
         self.define_inventory()
         self.initialize_server()
+        return True
+
+    def operations(self):
         return Operations(server=self.get_server())
 
     def get_server(self):

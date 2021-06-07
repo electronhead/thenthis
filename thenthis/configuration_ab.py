@@ -90,7 +90,7 @@ class ConfigurationAB(conf_x.Configuration):
         )
         self.programs["toggle_program"] = (
             prog_x.PBEProgram()
-            .body_element("quickly", "toggle_pivot")
+            .body_element("timely", "toggle_pivot")
             .body_element("timely", "notify_at_hub")
             .epilogue("reset")
         )
