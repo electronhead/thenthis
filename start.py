@@ -25,4 +25,3 @@ if program == "pivot":
     pp(operations[pi].schedule_pivot(start=util.Now.dt(), stop=util.Now.dt() + timedelta(hours=48)))
 else:
     pp(operations[pi].schedule_toggle(start=util.Now.dt(), stop=util.Now.dt() + timedelta(hours=48)))
-    

@@ -8,16 +8,16 @@ ranch_servers = {
         port=8000,
         tags={"server_name": ["batterypi"], "roles": ["hub"]},
     ),
-    "remotepi": Server(
-        host="192.168.1.37",
-        port=8000,
-        tags={"server_name": ["remotepi"], "roles": ["pivot"]},
-    ),
-#     "sandpatch": Server(
-#         host="192.168.1.141",
+#     "remotepi": Server(
+#         host="192.168.1.37",
 #         port=8000,
-#         tags={"server_name": ["sandpatch"], "roles": ["test"]},
+#         tags={"server_name": ["remotepi"], "roles": ["pivot"]},
 #     ),
+    "sandpatch": Server(
+        host="192.168.1.141",
+        port=8000,
+        tags={"server_name": ["sandpatch"], "roles": ["test"]},
+    ),
     "sandpatch-pivot": Server(
         host="192.168.1.161",
         port=8000,
@@ -26,12 +26,12 @@ ranch_servers = {
 }
 ranch_configurations = {
     "batterypi": Configuration(server_name="batterypi", servers=ranch_servers),
-    "remotepi": ConfigurationAB(
-        server_name="remotepi", servers=ranch_servers, pinA=18, pinB=17
-    ),
-#     "sandpatch": ConfigurationAB(
-#         server_name="sandpatch", servers=ranch_servers, pinA=18, pinB=17
+#     "remotepi": ConfigurationAB(
+#         server_name="remotepi", servers=ranch_servers, pinA=18, pinB=17
 #     ),
+    "sandpatch": ConfigurationAB(
+        server_name="sandpatch", servers=ranch_servers, pinA=18, pinB=17
+    ),
     "sandpatch-pivot": ConfigurationAB(
         server_name="sandpatch-pivot", servers=ranch_servers, pinA=18, pinB=17
     ),
